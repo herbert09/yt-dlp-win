@@ -1,6 +1,6 @@
 # YtDlpDownloader
 
-基于 [.NET 8](https://dotnet.microsoft.com/) WinForms + [yt-dlp](https://github.com/yt-dlp/yt-dlp) 的桌面视频下载工具，使用 [ReaLTaiizor](https://github.com/Taiizor/ReaLTaiizor) 实现 Material Design 深色主题界面。
+基于 [.NET 8](https://dotnet.microsoft.com/) WinForms + [yt-dlp](https://github.com/yt-dlp/yt-dlp) 的桌面视频下载工具，使用 [AntdUI](https://github.com/AntdUI/AntdUI) 实现 Ant Design 风格界面。
 
 ## 功能特性
 
@@ -12,7 +12,7 @@
 - **下载管理**：暂停、继续、删除任务，按下载时间倒序排列
 - **右键菜单**：复制链接、打开所在目录并自动选中文件
 - **历史记录**：启动时自动加载已下载记录，删除任务会同步清理记录
-- **Material Design**：深色主题、涟漪动画按钮、现代化输入框
+- **Ant Design 风格**：清新现代、无边框窗体、矢量图形绘制
 
 ## 环境要求
 
@@ -38,9 +38,9 @@ YtDlpDownloader/
 ├── AppConfig.cs          # 配置管理与历史记录持久化
 ├── DownloadRecord.cs     # 下载记录模型
 ├── DownloadTask.cs       # 下载任务模型（支持数据绑定）
-├── Form1.cs              # 主界面（MaterialForm）
+├── Form1.cs              # 主界面（AntdUI.Window）
 ├── Form1.Designer.cs     # 主界面布局
-├── Program.cs            # 程序入口，初始化 Material 主题
+├── Program.cs            # 程序入口
 ├── SettingsForm.cs       # 高级设置窗口
 ├── SettingsForm.Designer.cs
 └── YtDlpDownloader.csproj
@@ -73,7 +73,7 @@ dotnet build -c Release
 
 ## 依赖
 
-- [ReaLTaiizor](https://www.nuget.org/packages/ReaLTaiizor/) 3.8.1.8 — Material Design UI 组件库
+- [AntdUI](https://www.nuget.org/packages/AntdUI/) 2.3.9 — Ant Design WinForms UI 组件库
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) — 视频下载核心引擎
 
 ## 许可证

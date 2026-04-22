@@ -2,61 +2,70 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
-using ReaLTaiizor.Controls;
-using ReaLTaiizor.Forms;
-using ReaLTaiizor.Manager;
 
 namespace YtDlpDownloader;
 
-public partial class Form1 : MaterialForm
+public partial class Form1 : AntdUI.Window
 {
     private BindingList<DownloadTask> _tasks = new BindingList<DownloadTask>();
     private Dictionary<DownloadTask, Process> _processes = new Dictionary<DownloadTask, Process>();
+    private DownloadTask? _selectedTask;
 
     public Form1()
     {
         InitializeComponent();
-        MaterialSkinManager.Instance.AddFormToManage(this);
-        MaterialSkinManager.Instance.EnforceBackcolorOnAllComponents = false;
         AppConfig.Load();
         LoadDownloadedRecords();
         SetupGrid();
-        dgvTasks.CellPainting += DgvTasks_CellPainting;
     }
 
     private void SetupGrid()
     {
-        dgvTasks.AutoGenerateColumns = false;
-        dgvTasks.DataSource = _tasks;
-
-        var doubleBufferedType = dgvTasks.GetType().GetProperty("DoubleBuffered", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-        doubleBufferedType?.SetValue(dgvTasks, true);
-
-        var cms = new ContextMenuStrip();
-        var pauseItem = new ToolStripMenuItem("暂停", null, (s, e) => PauseSelectedTask());
-        var resumeItem = new ToolStripMenuItem("继续", null, (s, e) => ResumeSelectedTask());
-        var deleteItem = new ToolStripMenuItem("删除任务", null, (s, e) => DeleteSelectedTask());
-        var openDirItem = new ToolStripMenuItem("打开所在目录", null, (s, e) => OpenSelectedTaskDir());
-        var copyLinkItem = new ToolStripMenuItem("复制链接", null, (s, e) => CopySelectedTaskUrl());
-
-        cms.Items.Add(pauseItem);
-        cms.Items.Add(resumeItem);
-        cms.Items.Add(new ToolStripSeparator());
-        cms.Items.Add(copyLinkItem);
-        cms.Items.Add(openDirItem);
-        cms.Items.Add(deleteItem);
-
-        cms.Opening += (s, e) =>
+        tableTasks.Columns = new AntdUI.ColumnCollection
         {
-            if (dgvTasks.SelectedRows.Count == 0) { e.Cancel = true; return; }
-            var task = dgvTasks.SelectedRows[0].DataBoundItem as DownloadTask;
-            if (task == null) { e.Cancel = true; return; }
-
-            pauseItem.Visible = task.Status == "下载中";
-            resumeItem.Visible = task.Status == "已暂停";
+            new AntdUI.Column("Title", "标题") { Width = "40%" },
+            new AntdUI.Column("Status", "状态", AntdUI.ColumnAlign.Center) { Width = "12%" },
+            new AntdUI.Column("Progress", "进度", AntdUI.ColumnAlign.Center) { Width = "12%" },
+            new AntdUI.Column("FileSize", "文件大小", AntdUI.ColumnAlign.Center) { Width = "16%" },
+            new AntdUI.Column("DownloadTime", "下载时间", AntdUI.ColumnAlign.Center) { Width = "20%" }
         };
 
-        dgvTasks.ContextMenuStrip = cms;
+        tableTasks.DataSource = _tasks;
+
+        tableTasks.CellClick += (s, e) =>
+        {
+            if (e.Record is DownloadTask task) _selectedTask = task;
+        };
+
+        tableTasks.MouseClick += (s, e) =>
+        {
+            if (e.Button == MouseButtons.Right && _selectedTask != null)
+            {
+                var pauseVisible = _selectedTask.Status == "下载中";
+                var resumeVisible = _selectedTask.Status == "已暂停";
+
+                var items = new List<AntdUI.IContextMenuStripItem>();
+                if (pauseVisible) items.Add(new AntdUI.ContextMenuStripItem("暂停").SetIcon("PauseOutlined"));
+                if (resumeVisible) items.Add(new AntdUI.ContextMenuStripItem("继续").SetIcon("PlayCircleOutlined"));
+                items.Add(new AntdUI.ContextMenuStripItemDivider());
+                items.Add(new AntdUI.ContextMenuStripItem("复制链接").SetIcon("CopyOutlined"));
+                items.Add(new AntdUI.ContextMenuStripItem("打开所在目录").SetIcon("FolderOpenOutlined"));
+                items.Add(new AntdUI.ContextMenuStripItemDivider());
+                items.Add(new AntdUI.ContextMenuStripItem("删除任务").SetIcon("DeleteOutlined"));
+
+                AntdUI.ContextMenuStrip.open(tableTasks, it =>
+                {
+                    switch (it.Text)
+                    {
+                        case "暂停": PauseSelectedTask(); break;
+                        case "继续": ResumeSelectedTask(); break;
+                        case "复制链接": CopySelectedTaskUrl(); break;
+                        case "打开所在目录": OpenSelectedTaskDir(); break;
+                        case "删除任务": DeleteSelectedTask(); break;
+                    }
+                }, items.ToArray());
+            }
+        };
     }
 
     private void LoadDownloadedRecords()
@@ -84,59 +93,24 @@ public partial class Form1 : MaterialForm
         }
     }
 
-    private void DgvTasks_CellPainting(object? sender, DataGridViewCellPaintingEventArgs e)
-    {
-        if (e.ColumnIndex < 0 || e.RowIndex < 0) return;
-        var col = dgvTasks.Columns[e.ColumnIndex];
-        if (col == null || col.Name != "colProgress") return;
-        if (e.Graphics == null || e.CellStyle?.Font == null) return;
-
-        e.Paint(e.CellBounds, DataGridViewPaintParts.All & ~DataGridViewPaintParts.ContentForeground);
-
-        var value = e.Value as int? ?? 0;
-        var bounds = e.CellBounds;
-        bounds.Inflate(-2, -2);
-
-        using (var backBrush = new SolidBrush(Color.LightGray))
-        {
-            e.Graphics.FillRectangle(backBrush, bounds);
-        }
-
-        var progressWidth = (int)(bounds.Width * (value / 100.0));
-        if (progressWidth > 0)
-        {
-            using var foreBrush = new SolidBrush(Color.ForestGreen);
-            e.Graphics.FillRectangle(foreBrush, bounds.X, bounds.Y, progressWidth, bounds.Height);
-        }
-
-        var text = $"{value}%";
-        using var textBrush = new SolidBrush(Color.Black);
-        var size = e.Graphics.MeasureString(text, e.CellStyle.Font);
-        var textX = bounds.X + (bounds.Width - size.Width) / 2;
-        var textY = bounds.Y + (bounds.Height - size.Height) / 2;
-        e.Graphics.DrawString(text, e.CellStyle.Font, textBrush, textX, textY);
-
-        e.Handled = true;
-    }
-
     private async void btnDownload_Click(object sender, EventArgs e)
     {
         var url = txtUrl.Text.Trim();
         if (string.IsNullOrEmpty(url))
         {
-            MessageBox.Show("请输入视频链接", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            AntdUI.Message.info(this, "请输入视频链接");
             return;
         }
 
         if (_tasks.Any(t => string.Equals(t.Url, url, StringComparison.OrdinalIgnoreCase) && t.Status != "已完成" && t.Status != "失败"))
         {
-            MessageBox.Show("该链接正在下载中", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            AntdUI.Message.info(this, "该链接正在下载中");
             return;
         }
 
         if (AppConfig.IsDownloaded(url))
         {
-            MessageBox.Show("该链接已下载过", "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            AntdUI.Message.info(this, "该链接已下载过");
             return;
         }
 
@@ -148,6 +122,7 @@ public partial class Form1 : MaterialForm
         };
 
         _tasks.Insert(0, task);
+        tableTasks.Refresh();
         txtUrl.Clear();
 
         await Task.Run(() => DownloadVideo(task));
@@ -244,7 +219,7 @@ public partial class Form1 : MaterialForm
             {
                 task.Status = "失败";
                 task.ErrorMessage = "无法获取视频信息，请检查链接或代理设置";
-                MessageBox.Show(task.ErrorMessage, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AntdUI.Message.error(this, task.ErrorMessage);
             });
             return;
         }
@@ -257,7 +232,7 @@ public partial class Form1 : MaterialForm
             {
                 task.Status = "失败";
                 task.ErrorMessage = "该链接已下载过";
-                MessageBox.Show(task.ErrorMessage, "提示", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                AntdUI.Message.info(this, task.ErrorMessage);
             });
             return;
         }
@@ -323,7 +298,7 @@ public partial class Form1 : MaterialForm
             {
                 task.Status = "失败";
                 task.ErrorMessage = errorBuilder.ToString();
-                MessageBox.Show($"下载失败：{task.ErrorMessage}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                AntdUI.Message.error(this, $"下载失败：{task.ErrorMessage}");
             });
             return;
         }
@@ -412,44 +387,38 @@ public partial class Form1 : MaterialForm
 
     private void PauseSelectedTask()
     {
-        if (dgvTasks.SelectedRows.Count == 0) return;
-        var task = dgvTasks.SelectedRows[0].DataBoundItem as DownloadTask;
-        if (task == null) return;
+        if (_selectedTask == null) return;
 
-        if (_processes.TryGetValue(task, out var process) && !process.HasExited)
+        if (_processes.TryGetValue(_selectedTask, out var process) && !process.HasExited)
         {
-            task.IsCancelled = true;
+            _selectedTask.IsCancelled = true;
             process.Kill();
         }
     }
 
     private async void ResumeSelectedTask()
     {
-        if (dgvTasks.SelectedRows.Count == 0) return;
-        var task = dgvTasks.SelectedRows[0].DataBoundItem as DownloadTask;
-        if (task == null) return;
+        if (_selectedTask == null) return;
 
-        task.Status = "等待中";
-        task.Progress = 0;
-        task.IsCancelled = false;
-        await Task.Run(() => DownloadVideo(task));
+        _selectedTask.Status = "等待中";
+        _selectedTask.Progress = 0;
+        _selectedTask.IsCancelled = false;
+        await Task.Run(() => DownloadVideo(_selectedTask));
     }
 
     private void DeleteSelectedTask()
     {
-        if (dgvTasks.SelectedRows.Count == 0) return;
-        var task = dgvTasks.SelectedRows[0].DataBoundItem as DownloadTask;
-        if (task == null) return;
+        if (_selectedTask == null) return;
 
-        if (_processes.TryGetValue(task, out var process) && !process.HasExited)
+        if (_processes.TryGetValue(_selectedTask, out var process) && !process.HasExited)
         {
-            task.IsCancelled = true;
+            _selectedTask.IsCancelled = true;
             process.Kill();
         }
-        _processes.Remove(task);
-        _tasks.Remove(task);
+        _processes.Remove(_selectedTask);
+        _tasks.Remove(_selectedTask);
 
-        var record = AppConfig.Records.FirstOrDefault(r => string.Equals(r.Url, task.Url, StringComparison.OrdinalIgnoreCase));
+        var record = AppConfig.Records.FirstOrDefault(r => string.Equals(r.Url, _selectedTask.Url, StringComparison.OrdinalIgnoreCase));
         if (record != null)
         {
             AppConfig.Records.Remove(record);
@@ -459,17 +428,15 @@ public partial class Form1 : MaterialForm
 
     private void OpenSelectedTaskDir()
     {
-        if (dgvTasks.SelectedRows.Count == 0) return;
-        var task = dgvTasks.SelectedRows[0].DataBoundItem as DownloadTask;
-        if (task == null) return;
+        if (_selectedTask == null) return;
 
-        if (!string.IsNullOrEmpty(task.FilePath) && File.Exists(task.FilePath))
+        if (!string.IsNullOrEmpty(_selectedTask.FilePath) && File.Exists(_selectedTask.FilePath))
         {
-            Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{task.FilePath}\"") { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{_selectedTask.FilePath}\"") { UseShellExecute = true });
         }
-        else if (!string.IsNullOrEmpty(task.FilePath) && Directory.Exists(task.FilePath))
+        else if (!string.IsNullOrEmpty(_selectedTask.FilePath) && Directory.Exists(_selectedTask.FilePath))
         {
-            Process.Start(new ProcessStartInfo("explorer.exe", task.FilePath) { UseShellExecute = true });
+            Process.Start(new ProcessStartInfo("explorer.exe", _selectedTask.FilePath) { UseShellExecute = true });
         }
         else
         {
@@ -483,11 +450,8 @@ public partial class Form1 : MaterialForm
 
     private void CopySelectedTaskUrl()
     {
-        if (dgvTasks.SelectedRows.Count == 0) return;
-        var task = dgvTasks.SelectedRows[0].DataBoundItem as DownloadTask;
-        if (task == null) return;
-
-        Clipboard.SetText(task.Url);
+        if (_selectedTask == null) return;
+        Clipboard.SetText(_selectedTask.Url);
     }
 
     private void btnAdvancedSettings_Click(object sender, EventArgs e)

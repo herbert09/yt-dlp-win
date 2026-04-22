@@ -18,29 +18,29 @@ partial class SettingsForm
     private void InitializeComponent()
     {
         tableLayoutPanel1 = new TableLayoutPanel();
-        lblQuality = new Label();
-        cmbQuality = new ComboBox();
-        lblFormat = new Label();
-        cmbFormat = new ComboBox();
-        lblAudioQuality = new Label();
-        cmbAudioQuality = new ComboBox();
-        lblSubtitles = new Label();
-        cmbSubtitles = new ComboBox();
-        chkMetadata = new CheckBox();
-        lblCookies = new Label();
-        txtCookies = new TextBox();
-        btnBrowseCookies = new Button();
-        lblOutputDir = new Label();
-        txtOutputDir = new TextBox();
-        btnBrowseOutputDir = new Button();
-        lblProxy = new Label();
-        txtProxy = new TextBox();
-        lblYtDlpPath = new Label();
-        txtYtDlpPath = new TextBox();
-        btnBrowseYtDlp = new Button();
+        lblQuality = new AntdUI.Label();
+        cmbQuality = new AntdUI.Select();
+        lblFormat = new AntdUI.Label();
+        cmbFormat = new AntdUI.Select();
+        lblAudioQuality = new AntdUI.Label();
+        cmbAudioQuality = new AntdUI.Select();
+        lblSubtitles = new AntdUI.Label();
+        cmbSubtitles = new AntdUI.Select();
+        chkMetadata = new AntdUI.Checkbox();
+        lblCookies = new AntdUI.Label();
+        txtCookies = new AntdUI.Input();
+        btnBrowseCookies = new AntdUI.Button();
+        lblOutputDir = new AntdUI.Label();
+        txtOutputDir = new AntdUI.Input();
+        btnBrowseOutputDir = new AntdUI.Button();
+        lblProxy = new AntdUI.Label();
+        txtProxy = new AntdUI.Input();
+        lblYtDlpPath = new AntdUI.Label();
+        txtYtDlpPath = new AntdUI.Input();
+        btnBrowseYtDlp = new AntdUI.Button();
         panelButtons = new Panel();
-        btnOK = new Button();
-        btnCancel = new Button();
+        btnOK = new AntdUI.Button();
+        btnCancel = new AntdUI.Button();
         tableLayoutPanel1.SuspendLayout();
         panelButtons.SuspendLayout();
         SuspendLayout();
@@ -104,8 +104,7 @@ partial class SettingsForm
         // cmbQuality
         // 
         cmbQuality.Dock = DockStyle.Fill;
-        cmbQuality.DropDownStyle = ComboBoxStyle.DropDownList;
-        cmbQuality.Items.AddRange(new object[] { "best", "2160", "1080", "720", "480", "360" });
+        cmbQuality.Items.AddRange(new AntdUI.SelectItem[] { new AntdUI.SelectItem("best"), new AntdUI.SelectItem("2160"), new AntdUI.SelectItem("1080"), new AntdUI.SelectItem("720"), new AntdUI.SelectItem("480"), new AntdUI.SelectItem("360") });
         cmbQuality.Location = new Point(113, 13);
         cmbQuality.Name = "cmbQuality";
         cmbQuality.Size = new Size(274, 28);
@@ -124,8 +123,7 @@ partial class SettingsForm
         // cmbFormat
         // 
         cmbFormat.Dock = DockStyle.Fill;
-        cmbFormat.DropDownStyle = ComboBoxStyle.DropDownList;
-        cmbFormat.Items.AddRange(new object[] { "default", "mp4", "webm", "mkv", "mp3", "m4a", "wav" });
+        cmbFormat.Items.AddRange(new AntdUI.SelectItem[] { new AntdUI.SelectItem("default"), new AntdUI.SelectItem("mp4"), new AntdUI.SelectItem("webm"), new AntdUI.SelectItem("mkv"), new AntdUI.SelectItem("mp3"), new AntdUI.SelectItem("m4a"), new AntdUI.SelectItem("wav") });
         cmbFormat.Location = new Point(113, 53);
         cmbFormat.Name = "cmbFormat";
         cmbFormat.Size = new Size(274, 28);
@@ -144,8 +142,7 @@ partial class SettingsForm
         // cmbAudioQuality
         // 
         cmbAudioQuality.Dock = DockStyle.Fill;
-        cmbAudioQuality.DropDownStyle = ComboBoxStyle.DropDownList;
-        cmbAudioQuality.Items.AddRange(new object[] { "0", "2", "5", "9" });
+        cmbAudioQuality.Items.AddRange(new AntdUI.SelectItem[] { new AntdUI.SelectItem("0"), new AntdUI.SelectItem("2"), new AntdUI.SelectItem("5"), new AntdUI.SelectItem("9") });
         cmbAudioQuality.Location = new Point(113, 93);
         cmbAudioQuality.Name = "cmbAudioQuality";
         cmbAudioQuality.Size = new Size(274, 28);
@@ -164,8 +161,7 @@ partial class SettingsForm
         // cmbSubtitles
         // 
         cmbSubtitles.Dock = DockStyle.Fill;
-        cmbSubtitles.DropDownStyle = ComboBoxStyle.DropDownList;
-        cmbSubtitles.Items.AddRange(new object[] { "不下载", "中文", "英文" });
+        cmbSubtitles.Items.AddRange(new AntdUI.SelectItem[] { new AntdUI.SelectItem("不下载"), new AntdUI.SelectItem("中文"), new AntdUI.SelectItem("英文") });
         cmbSubtitles.Location = new Point(113, 133);
         cmbSubtitles.Name = "cmbSubtitles";
         cmbSubtitles.Size = new Size(364, 28);
@@ -180,7 +176,7 @@ partial class SettingsForm
         chkMetadata.Size = new Size(196, 34);
         chkMetadata.TabIndex = 8;
         chkMetadata.Text = "写入元数据并嵌入封面";
-        chkMetadata.UseVisualStyleBackColor = true;
+
         // 
         // lblCookies
         // 
@@ -208,7 +204,7 @@ partial class SettingsForm
         btnBrowseCookies.Size = new Size(94, 34);
         btnBrowseCookies.TabIndex = 11;
         btnBrowseCookies.Text = "浏览...";
-        btnBrowseCookies.UseVisualStyleBackColor = true;
+
         btnBrowseCookies.Click += btnBrowseCookies_Click;
         // 
         // lblOutputDir
@@ -238,7 +234,7 @@ partial class SettingsForm
         btnBrowseOutputDir.Size = new Size(94, 34);
         btnBrowseOutputDir.TabIndex = 14;
         btnBrowseOutputDir.Text = "浏览...";
-        btnBrowseOutputDir.UseVisualStyleBackColor = true;
+
         btnBrowseOutputDir.Click += btnBrowseOutputDir_Click;
         // 
         // lblProxy
@@ -285,7 +281,7 @@ partial class SettingsForm
         btnBrowseYtDlp.Size = new Size(94, 34);
         btnBrowseYtDlp.TabIndex = 19;
         btnBrowseYtDlp.Text = "浏览...";
-        btnBrowseYtDlp.UseVisualStyleBackColor = true;
+
         btnBrowseYtDlp.Click += btnBrowseYtDlp_Click;
         // 
         // panelButtons
@@ -306,7 +302,7 @@ partial class SettingsForm
         btnOK.Size = new Size(80, 30);
         btnOK.TabIndex = 0;
         btnOK.Text = "确定";
-        btnOK.UseVisualStyleBackColor = true;
+        btnOK.Type = AntdUI.TTypeMini.Primary;
         btnOK.Click += btnOK_Click;
         // 
         // btnCancel
@@ -317,7 +313,7 @@ partial class SettingsForm
         btnCancel.Size = new Size(80, 30);
         btnCancel.TabIndex = 1;
         btnCancel.Text = "取消";
-        btnCancel.UseVisualStyleBackColor = true;
+
         btnCancel.Click += btnCancel_Click;
         // 
         // SettingsForm
@@ -342,27 +338,27 @@ partial class SettingsForm
     #endregion
 
     private TableLayoutPanel tableLayoutPanel1;
-    private Label lblQuality;
-    private ComboBox cmbQuality;
-    private Label lblFormat;
-    private ComboBox cmbFormat;
-    private Label lblAudioQuality;
-    private ComboBox cmbAudioQuality;
-    private Label lblSubtitles;
-    private ComboBox cmbSubtitles;
-    private CheckBox chkMetadata;
-    private Label lblCookies;
-    private TextBox txtCookies;
-    private Button btnBrowseCookies;
-    private Label lblOutputDir;
-    private TextBox txtOutputDir;
-    private Button btnBrowseOutputDir;
-    private Label lblProxy;
-    private TextBox txtProxy;
-    private Label lblYtDlpPath;
-    private TextBox txtYtDlpPath;
-    private Button btnBrowseYtDlp;
+    private AntdUI.Label lblQuality;
+    private AntdUI.Select cmbQuality;
+    private AntdUI.Label lblFormat;
+    private AntdUI.Select cmbFormat;
+    private AntdUI.Label lblAudioQuality;
+    private AntdUI.Select cmbAudioQuality;
+    private AntdUI.Label lblSubtitles;
+    private AntdUI.Select cmbSubtitles;
+    private AntdUI.Checkbox chkMetadata;
+    private AntdUI.Label lblCookies;
+    private AntdUI.Input txtCookies;
+    private AntdUI.Button btnBrowseCookies;
+    private AntdUI.Label lblOutputDir;
+    private AntdUI.Input txtOutputDir;
+    private AntdUI.Button btnBrowseOutputDir;
+    private AntdUI.Label lblProxy;
+    private AntdUI.Input txtProxy;
+    private AntdUI.Label lblYtDlpPath;
+    private AntdUI.Input txtYtDlpPath;
+    private AntdUI.Button btnBrowseYtDlp;
     private Panel panelButtons;
-    private Button btnOK;
-    private Button btnCancel;
+    private AntdUI.Button btnOK;
+    private AntdUI.Button btnCancel;
 }

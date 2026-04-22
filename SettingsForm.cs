@@ -1,6 +1,6 @@
 namespace YtDlpDownloader;
 
-public partial class SettingsForm : Form
+public partial class SettingsForm : AntdUI.Window
 {
     public SettingsForm()
     {
@@ -10,22 +10,22 @@ public partial class SettingsForm : Form
 
     private void LoadSettings()
     {
-        cmbQuality.SelectedItem = AppConfig.Settings.Quality;
-        if (cmbQuality.SelectedIndex == -1) cmbQuality.SelectedIndex = 0;
+        cmbQuality.SelectedValue = AppConfig.Settings.Quality;
+        if (cmbQuality.SelectedValue == null) cmbQuality.Text = "best";
 
-        cmbFormat.SelectedItem = AppConfig.Settings.Format;
-        if (cmbFormat.SelectedIndex == -1) cmbFormat.SelectedIndex = 0;
+        cmbFormat.SelectedValue = AppConfig.Settings.Format;
+        if (cmbFormat.SelectedValue == null) cmbFormat.Text = "default";
 
-        cmbAudioQuality.SelectedItem = AppConfig.Settings.AudioQuality;
-        if (cmbAudioQuality.SelectedIndex == -1) cmbAudioQuality.SelectedIndex = 0;
+        cmbAudioQuality.SelectedValue = AppConfig.Settings.AudioQuality;
+        if (cmbAudioQuality.SelectedValue == null) cmbAudioQuality.Text = "0";
 
-        cmbSubtitles.SelectedItem = AppConfig.Settings.SubtitleLang switch
+        cmbSubtitles.SelectedValue = AppConfig.Settings.SubtitleLang switch
         {
             "zh-CN" => "中文",
             "en" => "英文",
             _ => "不下载"
         };
-        if (cmbSubtitles.SelectedIndex == -1) cmbSubtitles.SelectedIndex = 0;
+        if (cmbSubtitles.SelectedValue == null) cmbSubtitles.Text = "不下载";
         chkMetadata.Checked = AppConfig.Settings.WriteMetadata;
         txtCookies.Text = AppConfig.Settings.CookiesPath;
         txtOutputDir.Text = AppConfig.Settings.OutputDirectory;
@@ -57,10 +57,10 @@ public partial class SettingsForm : Form
 
     private void btnOK_Click(object sender, EventArgs e)
     {
-        AppConfig.Settings.Quality = cmbQuality.SelectedItem?.ToString() ?? "best";
-        AppConfig.Settings.Format = cmbFormat.SelectedItem?.ToString() ?? "default";
-        AppConfig.Settings.AudioQuality = cmbAudioQuality.SelectedItem?.ToString() ?? "0";
-        AppConfig.Settings.SubtitleLang = cmbSubtitles.SelectedItem?.ToString() switch
+        AppConfig.Settings.Quality = cmbQuality.SelectedValue?.ToString() ?? "best";
+        AppConfig.Settings.Format = cmbFormat.SelectedValue?.ToString() ?? "default";
+        AppConfig.Settings.AudioQuality = cmbAudioQuality.SelectedValue?.ToString() ?? "0";
+        AppConfig.Settings.SubtitleLang = cmbSubtitles.SelectedValue?.ToString() switch
         {
             "中文" => "zh-CN",
             "英文" => "en",

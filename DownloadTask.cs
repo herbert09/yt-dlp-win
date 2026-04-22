@@ -1,9 +1,6 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-
 namespace YtDlpDownloader;
 
-public class DownloadTask : INotifyPropertyChanged
+public class DownloadTask : AntdUI.NotifyProperty
 {
     private string _status = "等待中";
     private int _progress = 0;
@@ -18,31 +15,31 @@ public class DownloadTask : INotifyPropertyChanged
     public string Title
     {
         get => _title;
-        set { _title = value; OnPropertyChanged(); }
+        set { if (_title == value) return; _title = value; OnPropertyChanged(); }
     }
 
     public string Status
     {
         get => _status;
-        set { _status = value; OnPropertyChanged(); }
+        set { if (_status == value) return; _status = value; OnPropertyChanged(); }
     }
 
     public int Progress
     {
         get => _progress;
-        set { _progress = value; OnPropertyChanged(); }
+        set { if (_progress == value) return; _progress = value; OnPropertyChanged(); }
     }
 
     public string DownloadTime
     {
         get => _downloadTime;
-        set { _downloadTime = value; OnPropertyChanged(); }
+        set { if (_downloadTime == value) return; _downloadTime = value; OnPropertyChanged(); }
     }
 
     public string FileSize
     {
         get => _fileSize;
-        set { _fileSize = value; OnPropertyChanged(); }
+        set { if (_fileSize == value) return; _fileSize = value; OnPropertyChanged(); }
     }
 
     public string FilePath { get; set; } = "";
@@ -50,13 +47,6 @@ public class DownloadTask : INotifyPropertyChanged
     public string ErrorMessage
     {
         get => _errorMessage;
-        set { _errorMessage = value; OnPropertyChanged(); }
-    }
-
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    protected void OnPropertyChanged([CallerMemberName] string propertyName = "")
-    {
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        set { if (_errorMessage == value) return; _errorMessage = value; OnPropertyChanged(); }
     }
 }

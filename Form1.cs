@@ -25,7 +25,16 @@ public partial class Form1 : AntdUI.Window
         {
             new AntdUI.Column("Title", "标题") { Width = "40%" },
             new AntdUI.Column("Status", "状态", AntdUI.ColumnAlign.Center) { Width = "12%" },
-            new AntdUI.Column("Progress", "进度", AntdUI.ColumnAlign.Center) { Width = "12%" },
+            new AntdUI.Column("Progress", "进度", AntdUI.ColumnAlign.Center)
+            {
+                Width = "12%",
+                Render = (value, record, index) =>
+                {
+                    if (record is DownloadTask task)
+                        return new AntdUI.CellProgress(task.Progress / 100f).SetSize(80, 6);
+                    return new AntdUI.CellProgress(0).SetSize(80, 6);
+                }
+            },
             new AntdUI.Column("FileSize", "文件大小", AntdUI.ColumnAlign.Center) { Width = "16%" },
             new AntdUI.Column("DownloadTime", "下载时间", AntdUI.ColumnAlign.Center) { Width = "20%" }
         };

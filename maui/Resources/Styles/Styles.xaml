@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
+    <Style TargetType="Page" ApplyToDerivedTypes="True">
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray950}}" />
+    </Style>
+    <Style TargetType="Label">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+    </Style>
+    <Style TargetType="Button">
+        <Setter Property="TextColor" Value="{StaticResource White}" />
+        <Setter Property="BackgroundColor" Value="{StaticResource Primary}" />
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style TargetType="Entry">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}" />
+        <Setter Property="FontFamily" Value="OpenSansRegular" />
+    </Style>
+    <Style TargetType="Picker">
+        <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource White}}" />
+        <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray600}}" />
+    </Style>
+    <Style TargetType="Switch">
+        <Setter Property="OnColor" Value="{StaticResource Primary}" />
+    </Style>
+</ResourceDictionary>

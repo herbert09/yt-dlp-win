@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="YtDlpDownloader.SettingsPage"
+             Title="设置">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="12">
+            <Label Text="代理" FontAttributes="Bold"/>
+            <Entry x:Name="txtProxy" Placeholder="socks5://127.0.0.1:10808"/>
+
+            <Label Text="输出目录" FontAttributes="Bold"/>
+            <Entry x:Name="txtOutputDir"/>
+
+            <Label Text="画质" FontAttributes="Bold"/>
+            <Picker x:Name="cmbQuality"/>
+
+            <Label Text="格式" FontAttributes="Bold"/>
+            <Picker x:Name="cmbFormat"/>
+
+            <Label Text="音频质量" FontAttributes="Bold"/>
+            <Picker x:Name="cmbAudioQuality"/>
+
+            <Label Text="字幕" FontAttributes="Bold"/>
+            <Picker x:Name="cmbSubtitles"/>
+
+            <HorizontalStackLayout Spacing="10">
+                <Label Text="写入元数据" VerticalOptions="Center"/>
+                <Switch x:Name="chkMetadata"/>
+            </HorizontalStackLayout>
+
+            <Label Text="Cookies 路径" FontAttributes="Bold"/>
+            <Entry x:Name="txtCookies"/>
+
+            <Label Text="yt-dlp 路径" FontAttributes="Bold"/>
+            <Entry x:Name="txtYtDlpPath"/>
+
+            <Button Text="保存" Clicked="btnSave_Clicked" Margin="0,10,0,0"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

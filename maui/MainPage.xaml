@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="YtDlpDownloader.MainPage"
+             Title="YtDlpDownloader">
+    <Grid RowDefinitions="Auto,Auto,*">
+        <VerticalStackLayout Grid.Row="0" Padding="10" Spacing="5">
+            <HorizontalStackLayout Spacing="5">
+                <Entry x:Name="txtUrl" Placeholder="输入视频链接" WidthRequest="400"/>
+                <Button x:Name="btnDownload" Text="下载" Clicked="btnDownload_Clicked"/>
+                <Button x:Name="btnSettings" Text="设置" Clicked="btnSettings_Clicked" BackgroundColor="{StaticResource Gray400}"/>
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        <BoxView Grid.Row="1" HeightRequest="1" Color="{StaticResource Gray200}" HorizontalOptions="Fill"/>
+
+        <CollectionView Grid.Row="2" x:Name="tasksCollection" SelectionMode="Single">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto" Padding="10,5" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="{Binding Title}" VerticalOptions="Center" LineBreakMode="TailTruncation"/>
+                        <Label Grid.Column="1" Text="{Binding Status}" WidthRequest="70" VerticalOptions="Center"/>
+                        <ProgressBar Grid.Column="2" Progress="{Binding ProgressDouble}" WidthRequest="80" VerticalOptions="Center"/>
+                        <Label Grid.Column="3" Text="{Binding FileSize}" WidthRequest="70" VerticalOptions="Center"/>
+                        <Label Grid.Column="4" Text="{Binding DownloadTime}" WidthRequest="130" VerticalOptions="Center"/>
+                        <Button Grid.Column="5" Text="..." FontSize="12" Padding="8,2" Clicked="btnTaskActions_Clicked" CommandParameter="{Binding .}"/>
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

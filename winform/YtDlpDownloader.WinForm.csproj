@@ -6,10 +6,17 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>YtDlpDownloader</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AntdUI" Version="2.3.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\AppConfig.cs" />
+    <Compile Include="..\DownloadRecord.cs" />
+    <Compile Include="..\DownloadTask.cs" />
   </ItemGroup>
 
 </Project>

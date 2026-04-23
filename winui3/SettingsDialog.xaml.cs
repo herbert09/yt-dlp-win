@@ -1,4 +1,5 @@
 using Microsoft.UI.Xaml.Controls;
+using Windows.Storage.Pickers;
 
 namespace YtDlpDownloader;
 
@@ -8,6 +9,25 @@ public sealed partial class SettingsDialog : ContentDialog
     {
         this.InitializeComponent();
         LoadSettings();
+    }
+
+    private async void btnBrowseOutputDir_Click(object sender, Microsoft.UI.Xaml.RoutedEventArgs e)
+    {
+        var picker = new FolderPicker();
+        picker.SuggestedStartLocation = PickerLocationId.Desktop;
+        picker.FileTypeFilter.Add("*");
+
+        if (App.MainWindow != null)
+        {
+            var hwnd = WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow);
+            WinRT.Interop.InitializeWithWindow.Initialize(picker, hwnd);
+        }
+
+        var folder = await picker.PickSingleFolderAsync();
+        if (folder != null)
+        {
+            txtOutputDir.Text = folder.Path;
+        }
     }
 
     private void LoadSettings()

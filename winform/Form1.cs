@@ -16,6 +16,7 @@ public partial class Form1 : AntdUI.Window
         InitializeComponent();
         AppConfig.Load();
         LoadDownloadedRecords();
+        LoadPendingTasks();
         SetupGrid();
     }
 
@@ -102,6 +103,22 @@ public partial class Form1 : AntdUI.Window
         }
     }
 
+    private void LoadPendingTasks()
+    {
+        var pending = AppConfig.LoadPendingTasks();
+        foreach (var task in pending)
+        {
+            if (task.Status == "已完成") continue;
+            if (_tasks.Any(t => string.Equals(t.Url, task.Url, StringComparison.OrdinalIgnoreCase))) continue;
+
+            if (task.Status == "下载中" || task.Status == "获取信息中" || task.Status == "等待中")
+            {
+                task.Status = "已暂停";
+            }
+            _tasks.Add(task);
+        }
+    }
+
     private async void btnDownload_Click(object sender, EventArgs e)
     {
         var url = txtUrl.Text.Trim();
@@ -140,7 +157,7 @@ public partial class Form1 : AntdUI.Window
     private string BuildArguments(string url, string outputDir, string? uploader = null)
     {
         var sb = new StringBuilder();
-        sb.Append("--no-warnings --newline --no-colors --progress");
+        sb.Append("--no-warnings --newline --no-colors --progress --continue");
 
         if (!string.IsNullOrWhiteSpace(AppConfig.Settings.Proxy))
         {
@@ -410,7 +427,6 @@ public partial class Form1 : AntdUI.Window
         if (_selectedTask == null) return;
 
         _selectedTask.Status = "等待中";
-        _selectedTask.Progress = 0;
         _selectedTask.IsCancelled = false;
         await Task.Run(() => DownloadVideo(_selectedTask));
     }
@@ -433,6 +449,7 @@ public partial class Form1 : AntdUI.Window
             AppConfig.Records.Remove(record);
             AppConfig.SaveRecords();
         }
+        SavePendingTasks();
     }
 
     private void OpenSelectedTaskDir()
@@ -467,5 +484,27 @@ public partial class Form1 : AntdUI.Window
     {
         using var form = new SettingsForm();
         form.ShowDialog(this);
+    }
+
+    private void SavePendingTasks()
+    {
+        var pending = _tasks.Where(t => t.Status != "已完成").ToList();
+        AppConfig.SavePendingTasks(pending);
+    }
+
+    private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+    {
+        foreach (var kv in _processes.ToList())
+        {
+            try
+            {
+                kv.Key.IsCancelled = true;
+                if (!kv.Value.HasExited) kv.Value.Kill();
+                kv.Key.Status = "已暂停";
+            }
+            catch { }
+        }
+        _processes.Clear();
+        SavePendingTasks();
     }
 }

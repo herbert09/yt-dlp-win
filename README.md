@@ -34,7 +34,7 @@
 ## 项目结构
 
 ```
-YtDlpDownloader/
+winform/
 ├── AppConfig.cs          # 配置管理与历史记录持久化
 ├── DownloadRecord.cs     # 下载记录模型
 ├── DownloadTask.cs       # 下载任务模型（支持数据绑定）
@@ -43,17 +43,18 @@ YtDlpDownloader/
 ├── Program.cs            # 程序入口
 ├── SettingsForm.cs       # 高级设置窗口
 ├── SettingsForm.Designer.cs
-└── YtDlpDownloader.csproj
+└── YtDlpDownloader.WinForm.csproj
 ```
 
 ## 构建
 
 ```bash
+cd winform
 dotnet restore
 dotnet build -c Release
 ```
 
-编译输出位于 `bin/Release/net8.0-windows/`。
+编译输出位于 `winform/bin/Release/net8.0-windows/`。
 
 ## 配置说明
 

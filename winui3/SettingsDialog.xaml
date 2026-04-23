@@ -15,7 +15,10 @@
             <TextBox x:Name="txtProxy" PlaceholderText="socks5://127.0.0.1:10808"/>
 
             <TextBlock Text="输出目录" FontWeight="SemiBold"/>
-            <TextBox x:Name="txtOutputDir"/>
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBox x:Name="txtOutputDir" Grid.Column="0" IsReadOnly="True"/>
+                <Button x:Name="btnBrowseOutputDir" Content="浏览..." Grid.Column="1" Margin="8,0,0,0" Click="btnBrowseOutputDir_Click"/>
+            </Grid>
 
             <TextBlock Text="画质" FontWeight="SemiBold"/>
             <ComboBox x:Name="cmbQuality" HorizontalAlignment="Stretch"/>

@@ -23,6 +23,7 @@ public static class AppConfig
     private static readonly string ConfigPath = Path.Combine(AppContext.BaseDirectory, "settings.json");
     private static readonly string RecordsPath = Path.Combine(AppContext.BaseDirectory, "downloaded.csv");
     private static readonly string LegacyRecordsPath = Path.Combine(AppContext.BaseDirectory, "downloaded.json");
+    private static readonly string PendingTasksPath = Path.Combine(AppContext.BaseDirectory, "tasks.json");
 
     public static AppSettings Settings { get; set; } = new AppSettings();
     public static List<DownloadRecord> Records { get; set; } = new List<DownloadRecord>();
@@ -151,5 +152,26 @@ public static class AppConfig
     public static bool IsDownloaded(string url)
     {
         return Records.Any(r => string.Equals(r.Url, url, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public static void SavePendingTasks(List<DownloadTask> tasks)
+    {
+        var json = JsonSerializer.Serialize(tasks, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(PendingTasksPath, json);
+    }
+
+    public static List<DownloadTask> LoadPendingTasks()
+    {
+        if (!File.Exists(PendingTasksPath)) return new List<DownloadTask>();
+        try
+        {
+            var json = File.ReadAllText(PendingTasksPath);
+            var loaded = JsonSerializer.Deserialize<List<DownloadTask>>(json);
+            return loaded ?? new List<DownloadTask>();
+        }
+        catch
+        {
+            return new List<DownloadTask>();
+        }
     }
 }

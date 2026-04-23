@@ -3,3 +3,6 @@ obj/
 *.user
 *.lscache
 downloads/
+/winui3
+/CheckTableProj
+/maui

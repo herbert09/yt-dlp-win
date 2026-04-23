@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ContentDialog
+    x:Class="YtDlpDownloader.SettingsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="设置"
+    PrimaryButtonText="保存"
+    CloseButtonText="取消"
+    DefaultButton="Primary"
+    PrimaryButtonClick="ContentDialog_PrimaryButtonClick">
+
+    <ScrollViewer>
+        <StackPanel Spacing="10" Width="400">
+            <TextBlock Text="代理" FontWeight="SemiBold"/>
+            <TextBox x:Name="txtProxy" PlaceholderText="socks5://127.0.0.1:10808"/>
+
+            <TextBlock Text="输出目录" FontWeight="SemiBold"/>
+            <TextBox x:Name="txtOutputDir"/>
+
+            <TextBlock Text="画质" FontWeight="SemiBold"/>
+            <ComboBox x:Name="cmbQuality" HorizontalAlignment="Stretch"/>
+
+            <TextBlock Text="格式" FontWeight="SemiBold"/>
+            <ComboBox x:Name="cmbFormat" HorizontalAlignment="Stretch"/>
+
+            <TextBlock Text="音频质量" FontWeight="SemiBold"/>
+            <ComboBox x:Name="cmbAudioQuality" HorizontalAlignment="Stretch"/>
+
+            <TextBlock Text="字幕" FontWeight="SemiBold"/>
+            <ComboBox x:Name="cmbSubtitles" HorizontalAlignment="Stretch"/>
+
+            <CheckBox x:Name="chkMetadata" Content="写入元数据并嵌入封面"/>
+
+            <TextBlock Text="Cookies 路径" FontWeight="SemiBold"/>
+            <TextBox x:Name="txtCookies"/>
+
+            <TextBlock Text="yt-dlp 路径" FontWeight="SemiBold"/>
+            <TextBox x:Name="txtYtDlpPath"/>
+        </StackPanel>
+    </ScrollViewer>
+</ContentDialog>

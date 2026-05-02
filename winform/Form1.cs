@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 namespace YtDlpDownloader;
@@ -18,6 +19,9 @@ public partial class Form1 : AntdUI.Window
         LoadDownloadedRecords();
         LoadPendingTasks();
         SetupGrid();
+
+        var iconPath = Path.Combine(AppContext.BaseDirectory, "Resources", "app.ico");
+        if (File.Exists(iconPath)) Icon = new Icon(iconPath);
     }
 
     private void SetupGrid()
@@ -49,8 +53,20 @@ public partial class Form1 : AntdUI.Window
 
         tableTasks.MouseClick += (s, e) =>
         {
-            if (e.Button == MouseButtons.Right && _selectedTask != null)
+            if (e.Button == MouseButtons.Right)
             {
+                var cell = tableTasks.HitTest(e.X, e.Y);
+                if (cell?.Row?.RECORD is DownloadTask task)
+                {
+                    _selectedTask = task;
+                }
+                else
+                {
+                    _selectedTask = null;
+                }
+
+                if (_selectedTask == null) return;
+
                 var pauseVisible = _selectedTask.Status == "下载中";
                 var resumeVisible = _selectedTask.Status == "已暂停";
 
@@ -119,6 +135,76 @@ public partial class Form1 : AntdUI.Window
         }
     }
 
+    private static bool IsPlaylistUrl(string url)
+    {
+        var lower = url.ToLowerInvariant();
+        if (lower.Contains("youtube.com") && lower.Contains("list=")) return true;
+        if (lower.Contains("youtu.be") && lower.Contains("list=")) return true;
+        if (lower.Contains("bilibili.com") && (lower.Contains("/list/") || lower.Contains("collection") || lower.Contains("series"))) return true;
+        return false;
+    }
+
+    private async Task<List<(string Url, string Title)>> GetPlaylistEntries(string url)
+    {
+        var args = new StringBuilder("--no-warnings --flat-playlist --dump-single-json");
+        if (!string.IsNullOrWhiteSpace(AppConfig.Settings.Proxy))
+        {
+            args.Append($" --proxy \"{AppConfig.Settings.Proxy}\"");
+        }
+        args.Append($" \"{url}\"");
+
+        var psi = new ProcessStartInfo
+        {
+            FileName = AppConfig.Settings.YtDlpPath,
+            Arguments = args.ToString(),
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            UseShellExecute = false,
+            CreateNoWindow = true
+        };
+
+        using var process = new Process { StartInfo = psi };
+        process.Start();
+        var output = await process.StandardOutput.ReadToEndAsync();
+        await process.WaitForExitAsync();
+
+        if (process.ExitCode != 0 || string.IsNullOrWhiteSpace(output))
+            return new List<(string, string)>();
+
+        try
+        {
+            using var doc = JsonDocument.Parse(output);
+            var root = doc.RootElement;
+
+            if (!root.TryGetProperty("entries", out var entries))
+                return new List<(string, string)>();
+
+            var result = new List<(string, string)>();
+            foreach (var entry in entries.EnumerateArray())
+            {
+                string? entryUrl = null;
+                string? entryTitle = null;
+
+                if (entry.TryGetProperty("url", out var urlProp))
+                    entryUrl = urlProp.GetString();
+                else if (entry.TryGetProperty("webpage_url", out var webpageUrl))
+                    entryUrl = webpageUrl.GetString();
+
+                if (entry.TryGetProperty("title", out var titleProp))
+                    entryTitle = titleProp.GetString();
+
+                if (!string.IsNullOrEmpty(entryUrl))
+                    result.Add((entryUrl, entryTitle ?? ""));
+            }
+
+            return result;
+        }
+        catch
+        {
+            return new List<(string, string)>();
+        }
+    }
+
     private async void btnDownload_Click(object sender, EventArgs e)
     {
         var url = txtUrl.Text.Trim();
@@ -126,6 +212,56 @@ public partial class Form1 : AntdUI.Window
         {
             AntdUI.Message.info(this, "请输入视频链接");
             return;
+        }
+
+        if (IsPlaylistUrl(url))
+        {
+            var playlistEntries = await GetPlaylistEntries(url);
+            if (playlistEntries.Count > 1)
+            {
+                var added = 0;
+                var skipped = 0;
+                foreach (var (entryUrl, entryTitle) in playlistEntries)
+                {
+                    if (_tasks.Any(t => string.Equals(t.Url, entryUrl, StringComparison.OrdinalIgnoreCase) && t.Status != "已完成" && t.Status != "失败"))
+                    {
+                        skipped++;
+                        continue;
+                    }
+                    if (AppConfig.IsDownloaded(entryUrl))
+                    {
+                        skipped++;
+                        continue;
+                    }
+
+                    var subTask = new DownloadTask
+                    {
+                        Url = entryUrl,
+                        Title = entryTitle,
+                        Status = "等待中",
+                        Progress = 0
+                    };
+                    _tasks.Insert(0, subTask);
+                    _ = Task.Run(() => DownloadVideo(subTask));
+                    added++;
+                }
+
+                if (added > 0)
+                {
+                    tableTasks.Refresh();
+                    txtUrl.Clear();
+                }
+                if (skipped > 0)
+                {
+                    AntdUI.Message.info(this, $"播放列表中有 {skipped} 个视频已下载或正在下载中，已跳过");
+                }
+                return;
+            }
+            if (playlistEntries.Count == 0)
+            {
+                AntdUI.Message.error(this, "无法解析播放列表，请检查链接或代理设置");
+                return;
+            }
         }
 
         if (_tasks.Any(t => string.Equals(t.Url, url, StringComparison.OrdinalIgnoreCase) && t.Status != "已完成" && t.Status != "失败"))
@@ -442,6 +578,7 @@ public partial class Form1 : AntdUI.Window
         }
         _processes.Remove(_selectedTask);
         _tasks.Remove(_selectedTask);
+        tableTasks.Refresh();
 
         var record = AppConfig.Records.FirstOrDefault(r => string.Equals(r.Url, _selectedTask.Url, StringComparison.OrdinalIgnoreCase));
         if (record != null)
@@ -450,6 +587,7 @@ public partial class Form1 : AntdUI.Window
             AppConfig.SaveRecords();
         }
         SavePendingTasks();
+        _selectedTask = null;
     }
 
     private void OpenSelectedTaskDir()

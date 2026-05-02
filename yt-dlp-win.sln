@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "winform", "winform", "{782A43A7-4C55-C184-AD7D-3A90D5EC73BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YtDlpDownloader.WinForm", "winform\YtDlpDownloader.WinForm.csproj", "{F0A4BDDC-5A99-50E6-9377-1FCBB68ADF56}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F0A4BDDC-5A99-50E6-9377-1FCBB68ADF56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F0A4BDDC-5A99-50E6-9377-1FCBB68ADF56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F0A4BDDC-5A99-50E6-9377-1FCBB68ADF56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F0A4BDDC-5A99-50E6-9377-1FCBB68ADF56}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F0A4BDDC-5A99-50E6-9377-1FCBB68ADF56} = {782A43A7-4C55-C184-AD7D-3A90D5EC73BF}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8874758A-DA9A-4411-BFDF-ADDF0424BF0C}
+	EndGlobalSection
+EndGlobal
